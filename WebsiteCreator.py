@@ -1,7 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMenuBar, QMenu
 
-#from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel
 import os
 import sys
 
@@ -13,14 +12,11 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit.setEnabled(True)
-        self.textEdit.setGeometry(QtCore.QRect(10, 10, 851, 641))
-        self.textEdit.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        MainWindow.setCentralWidget(self.textEdit)
         font = QtGui.QFont()
         font.setPointSize(14)
         self.textEdit.setFont(font)
         self.textEdit.setObjectName("textEdit")
-        MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 882, 21))
         self.menubar.setObjectName("menubar")
@@ -84,6 +80,10 @@ class Ui_MainWindow(object):
 
     def CreateWebPage(self):
         main_text = self.textEdit.toPlainText()
+        self.CreateHTMLfile(main_text)
+        self.CreateCSSfile()
+
+    def CreateHTMLfile(self, MainText):
         file = open('index.html', 'w')
         file.write("<!DOCTYPE html>\n")
         file.write("    <html>\n")
@@ -92,13 +92,27 @@ class Ui_MainWindow(object):
         file.write("            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n")
         file.write("            <meta name=\"keywords\" content=\"вебсайт\">\n")
         file.write("            <title>New website</title>\n")
+        file.write("            <link rel=\"stylesheet\" href=\"main.css\" />")
         file.write("        </head>\n")
         file.write("        <body>\n")
-        file.write("            <p>" + str(main_text) + "</p>")
+        file.write("            <div id=\"header\">")
+        file.write("                <h1>")
+        file.write("                    new web site")
+        file.write("                </h1>")
+        file.write("            </div>")
+        file.write("            <div id=\"main\">")
+        file.write("                <p>" + str(MainText) + "</p>")
+        file.write("            </div>")
         file.write("        </body>\n")
         file.write("    </html>\n")
         file.close()
 
+    def CreateCSSfile(self):
+        file = open('main.css', 'w')
+        file.write("*{ margin:0; padding:0; }\n")
+        file.write("body { background-color: #AFEEEE; }")
+        file.write("#main { background-color: white; height: auto; min-width: 1140px; margin-left: 350px; margin-right: 350px; margin-bottom: 50px; border: 3px solid silver; }")
+        file.write("#header { height: 50px; width: 100%; text-align: center; background-color: orange; margin-bottom: 25px;}")
     def save_file(self):
         if(path == ""):
             path, _ = QFileDialog.getSaveFileName()
@@ -110,17 +124,50 @@ class Ui_MainWindow(object):
         f.close()
 
     def open_file(self):
-        options = QFileDialog.getOpenFileName()[0]
+        options = QFileDialog.getOpenFileName(self.centralwidget, 'Open file', '', 'txt (*.txt);; docx(*.docx)')[0]
         if(options == ""):
             return 0
         f = open(options, 'r')
         self.textEdit.setText(f.read())
         f.close()
 
+
+
+class ClssDialog(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        super(ClssDialog, self).__init__(parent)
+
+        self.verticalLayout = QtWidgets.QVBoxLayout(self)
+        self.verticalLayout.setObjectName("verticalLayout")
+        ClssDialog.resize(self, 440, 350)
+        self.pushButton = QtWidgets.QPushButton(self)
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(self.btnSave)
+        self.verticalLayout.addWidget(self.pushButton)
+        self.setWindowTitle("Change option")
+        self.pushButton.setText("Save option")
+
+    def btnSave(self):
+        self.close()
+
+
+class MyWin(QtWidgets.QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)     
+
+        self.ui.actionChange_option.triggered.connect(self.openDialog)
+
+    def openDialog(self):
+        dialog = ClssDialog(self)
+        dialog.exec_()
+
+
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    window = MyWin()
+    window.show()
     sys.exit(app.exec_())
