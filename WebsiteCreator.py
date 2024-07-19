@@ -11,12 +11,15 @@ class Ui_MainWindow(object):
         MainWindow.resize(882, 700)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
         self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
-        MainWindow.setCentralWidget(self.textEdit)
         font = QtGui.QFont()
         font.setPointSize(14)
         self.textEdit.setFont(font)
+        self.textEdit.setGeometry(QtCore.QRect(40, 90, 800, 501))
         self.textEdit.setObjectName("textEdit")
+
+        MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 882, 21))
         self.menubar.setObjectName("menubar")
@@ -45,15 +48,37 @@ class Ui_MainWindow(object):
         self.actionOpen.setObjectName("actionOpen")
         self.actionCreate_new_page = QtWidgets.QAction(MainWindow)
         self.actionCreate_new_page.setObjectName("actionCreate_new_page")
-        self.actionChange_option = QtWidgets.QAction(MainWindow)
-        self.actionChange_option.setObjectName("actionChange_option")
         self.menufile.addAction(self.actionOpen)
         self.menufile.addAction(self.actionSave)
         self.menufile.addAction(self.actionSave_as)
         self.menuweb_site.addAction(self.actionCreate_new_page)
-        self.menuweb_site.addAction(self.actionChange_option)
         self.menubar.addAction(self.menufile.menuAction())
         self.menubar.addAction(self.menuweb_site.menuAction())
+
+        self.lineEdit = QtWidgets.QLineEdit(MainWindow)
+        self.lineEdit.setGeometry(QtCore.QRect(140, 30, 491, 20))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.lineEdit.setFont(font)
+        self.lineEdit.setObjectName("lineEdit")
+        self.label = QtWidgets.QLabel(MainWindow)
+        self.label.setGeometry(QtCore.QRect(40, 30, 81, 20))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.lineEdit_2 = QtWidgets.QLineEdit(MainWindow)
+        self.lineEdit_2.setGeometry(QtCore.QRect(140, 70, 491, 20))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.lineEdit_2.setFont(font)
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.label_2 = QtWidgets.QLabel(MainWindow)
+        self.label_2.setGeometry(QtCore.QRect(40, 70, 101, 20))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
 
         self.addFunction()
 
@@ -69,7 +94,8 @@ class Ui_MainWindow(object):
         self.actionSave_as.setText(_translate("MainWindow", "Save as"))
         self.actionOpen.setText(_translate("MainWindow", "Open"))
         self.actionCreate_new_page.setText(_translate("MainWindow", "Create new page"))
-        self.actionChange_option.setText(_translate("MainWindow", "Change option"))
+        self.label.setText(_translate("Form", "Website title"))
+        self.label_2.setText(_translate("Form", "Website header"))
 
     def addFunction(self):
         self.actionOpen.triggered.connect(self.open_file)
@@ -80,24 +106,30 @@ class Ui_MainWindow(object):
 
     def CreateWebPage(self):
         main_text = self.textEdit.toPlainText()
-        self.CreateHTMLfile(main_text)
+        web_site_title = "New web site title"
+        web_site_header = "new web site header"
+        if(self.lineEdit.text() != ""):
+            web_site_title = self.lineEdit.text()
+        if(self.lineEdit_2.text() != ""):
+            web_site_header = self.lineEdit_2.text()
+        self.CreateHTMLfile(main_text, web_site_title, web_site_header)
         self.CreateCSSfile()
 
-    def CreateHTMLfile(self, MainText):
+    def CreateHTMLfile(self, MainText, web_site_title, web_site_header):
         file = open('index.html', 'w')
         file.write("<!DOCTYPE html>\n")
         file.write("    <html>\n")
         file.write("        <head>\n")
         file.write("            <meta charset=\"utf-8\">\n")
         file.write("            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n")
-        file.write("            <meta name=\"keywords\" content=\"вебсайт\">\n")
-        file.write("            <title>New website</title>\n")
+        file.write("            <meta name=\"keywords\" content=\"website\">\n")
+        file.write("            <title>"+ web_site_title +"</title>\n")
         file.write("            <link rel=\"stylesheet\" href=\"main.css\" />")
         file.write("        </head>\n")
         file.write("        <body>\n")
         file.write("            <div id=\"header\">")
         file.write("                <h1>")
-        file.write("                    new web site")
+        file.write("                    " + web_site_header)
         file.write("                </h1>")
         file.write("            </div>")
         file.write("            <div id=\"main\">")
@@ -110,8 +142,8 @@ class Ui_MainWindow(object):
     def CreateCSSfile(self):
         file = open('main.css', 'w')
         file.write("*{ margin:0; padding:0; }\n")
-        file.write("body { background-color: #AFEEEE; }")
-        file.write("#main { background-color: white; height: auto; min-width: 1140px; margin-left: 350px; margin-right: 350px; margin-bottom: 50px; border: 3px solid silver; }")
+        file.write("body { background-color: #3f4849; }")
+        file.write("#main { background-color: #ffffff; height: auto; min-width: 1140px; margin-left: 350px; margin-right: 350px; margin-bottom: 50px; border: 3px solid silver; }")
         file.write("#header { height: 50px; width: 100%; text-align: center; background-color: orange; margin-bottom: 25px;}")
     def save_file(self):
         if(path == ""):
@@ -131,43 +163,16 @@ class Ui_MainWindow(object):
         self.textEdit.setText(f.read())
         f.close()
 
+    def set_web_site_title(self, title):
+        self.web_site_title = title
 
-
-class ClssDialog(QtWidgets.QDialog):
-    def __init__(self, parent=None):
-        super(ClssDialog, self).__init__(parent)
-
-        self.verticalLayout = QtWidgets.QVBoxLayout(self)
-        self.verticalLayout.setObjectName("verticalLayout")
-        ClssDialog.resize(self, 440, 350)
-        self.pushButton = QtWidgets.QPushButton(self)
-        self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect(self.btnSave)
-        self.verticalLayout.addWidget(self.pushButton)
-        self.setWindowTitle("Change option")
-        self.pushButton.setText("Save option")
-
-    def btnSave(self):
-        self.close()
-
-
-class MyWin(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)     
-
-        self.ui.actionChange_option.triggered.connect(self.openDialog)
-
-    def openDialog(self):
-        dialog = ClssDialog(self)
-        dialog.exec_()
-
-
+    def set_web_site_header(self, header):
+        self.web_site_header = header
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    window = MyWin()
-    window.show()
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
     sys.exit(app.exec_())
