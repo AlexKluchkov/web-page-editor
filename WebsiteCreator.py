@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QFileDialog, QMenuBar, QMenu
 
 import os
 import sys
+import re
 
 class Ui_MainWindow(object):
     path = ""
@@ -106,6 +107,7 @@ class Ui_MainWindow(object):
 
     def CreateWebPage(self):
         main_text = self.textEdit.toPlainText()
+        main_text = re.sub("\n", "<br>", main_text)
         web_site_title = "New web site title"
         web_site_header = "new web site header"
         if(self.lineEdit.text() != ""):
